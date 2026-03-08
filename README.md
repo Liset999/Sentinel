@@ -2,6 +2,9 @@
 
 A lightweight Linux observability and fault-diagnosis training project.
 
+> WIP / learning project  
+> This is a learning-oriented, single-node Linux observability project.
+
 ## Goals
 
 - Parse /proc manually
