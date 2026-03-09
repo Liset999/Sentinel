@@ -20,3 +20,30 @@ def parse_cpu_times(stat_text):
         "softirq": int(parts[7]),
         "steal": int(parts[8]),
     }
+ 
+
+def get_total_and_idle(cpu_times):
+    total = (
+        cpu_times["user"]
+        + cpu_times["nice"]
+        + cpu_times["system"]
+        + cpu_times["idle"]
+        + cpu_times["iowait"]
+        + cpu_times["irq"]
+        + cpu_times["softirq"]
+        + cpu_times["steal"]
+    )
+    idle = cpu_times["idle"] + cpu_times["iowait"]
+    return total,idle
+
+def calculate_cpu_usage(prev_cpu_times,curr_cpu_times):
+    prev_total, prev_idle = get_total_and_idle(prev_cpu_times)
+    curr_total, curr_idle = get_total_and_idle(curr_cpu_times)
+
+    total_delta = curr_total - prev_total
+    idle_delta = curr_idle - prev_idle
+
+    if total_delta <= 0:
+        return 0.0
+
+    return (total_delta - idle_delta) / total_delta * 100

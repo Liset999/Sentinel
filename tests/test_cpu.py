@@ -1,4 +1,4 @@
-from collector.cpu import parse_cpu_times
+from collector.cpu import parse_cpu_times, calculate_cpu_usage
 
 
 def test_parse_cpu_times_basic():
@@ -14,11 +14,40 @@ def test_parse_cpu_times_basic():
     assert data["softirq"] == 7
     assert data["steal"] == 8
 
+
 def test_parse_cpu_times_invalid():
     bad = "intr 1 2 3\n"
 
     try:
         parse_cpu_times(bad)
         assert False
-    except Exception:
+    except ValueError:
         assert True
+
+
+def test_calculate_cpu_usage_basic():
+    prev = {
+        "user": 100,
+        "nice": 0,
+        "system": 100,
+        "idle": 700,
+        "iowait": 50,
+        "irq": 10,
+        "softirq": 20,
+        "steal": 0,
+    }
+
+    curr = {
+        "user": 150,
+        "nice": 0,
+        "system": 150,
+        "idle": 800,
+        "iowait": 50,
+        "irq": 10,
+        "softirq": 40,
+        "steal": 0,
+    }
+
+    usage = calculate_cpu_usage(prev, curr)
+
+    assert round(usage, 2) == 54.55
