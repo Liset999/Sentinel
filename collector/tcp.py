@@ -48,7 +48,13 @@ def read_tcp_table(path: str = "/proc/net/tcp") -> str:
 
 
 def get_tcp_stats(path: str = "/proc/net/tcp") -> Dict[str, int]:
-    content = read_tcp_table(path)
+    try:
+        content = read_tcp_table(path)
+    except FileNotFoundError:
+        return {}
+    except PermissionError:
+        return {}
+
     return parse_tcp_table(content)
 
 

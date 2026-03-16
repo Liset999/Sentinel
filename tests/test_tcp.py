@@ -1,4 +1,4 @@
-from collector.tcp import parse_tcp_table
+from collector.tcp import parse_tcp_table,get_tcp_stats
 
 
 def test_parse_tcp_table_basic():
@@ -27,3 +27,12 @@ def test_parse_tcp_table_unknown_state():
 
 def test_parse_tcp_table_empty():
     assert parse_tcp_table("") == {}
+
+def test_parse_tcp_table_skips_short_lines():
+    sample = """sl local_address rem_address st
+bad line
+"""
+    assert parse_tcp_table(sample) == {}
+
+def test_get_tcp_stats_file_not_found():
+    assert get_tcp_stats("/not/exist/path") == {}
