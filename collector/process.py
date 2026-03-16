@@ -29,11 +29,21 @@ def count_zombie_processes(proc_root: str = "/proc") -> int:
         if not entry.isdigit():
             continue
 
-        content = read_process_stat(entry, proc_root)
-        state = parse_process_stat(content)
+        try:
+            content = read_process_stat(entry, proc_root)
+            state = parse_process_stat(content)
+        except FileNotFoundError:
+            continue
+        except PermissionError:
+            continue
+        except ValueError:
+            continue
 
         if state == "Z":
             zombie_count += 1
 
     return zombie_count
 
+if __name__ == "__main__":
+    zombie_count = count_zombie_processes()
+    print(f"ZOMBIE: {zombie_count}")

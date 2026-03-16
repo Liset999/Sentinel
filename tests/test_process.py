@@ -31,3 +31,28 @@ def test_count_zombie_processes(tmp_path):
     (proc_root / "net").mkdir()
 
     assert count_zombie_processes(str(proc_root)) == 1
+
+def test_count_zombie_processes_skips_missing_stat(tmp_path):
+    proc_root = tmp_path
+
+    pid1 = proc_root / "123"
+    pid1.mkdir()
+    (pid1 / "stat").write_text("123 (zombie_maker) Z 1 2 3 4 5\n", encoding="utf-8")
+
+    pid2 = proc_root / "456"
+    pid2.mkdir()
+
+    assert count_zombie_processes(str(proc_root)) == 1
+
+def test_count_zombie_processes_skips_invalid_stat(tmp_path):
+    proc_root = tmp_path
+
+    pid1 = proc_root / "123"
+    pid1.mkdir()
+    (pid1 / "stat").write_text("123 (zombie_maker) Z 1 2 3 4 5\n", encoding="utf-8")
+
+    pid2 = proc_root / "456"
+    pid2.mkdir()
+    (pid2 / "stat").write_text("bad stat content\n", encoding="utf-8")
+
+    assert count_zombie_processes(str(proc_root)) == 1
