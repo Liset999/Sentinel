@@ -47,3 +47,6 @@ def calculate_cpu_usage(prev_cpu_times,curr_cpu_times):
         return 0.0
 
     return (total_delta - idle_delta) / total_delta * 100
+
+def get_cpu_usage_ratio(prev_cpu_times, curr_cpu_times):
+    return calculate_cpu_usage(prev_cpu_times, curr_cpu_times) / 100.0

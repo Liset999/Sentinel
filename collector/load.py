@@ -14,3 +14,7 @@ def parse_loadavg(text):
         "load5": float(parts[1]),
         "load15": float(parts[2]),
     }
+
+def get_load_average(path="/proc/loadavg"):
+    text = read_loadavg(path)
+    return parse_loadavg(text)

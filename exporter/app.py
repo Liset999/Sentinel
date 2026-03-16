@@ -2,12 +2,11 @@ import time
 
 from prometheus_client import Gauge, start_http_server
 
-from collector.cpu import calculate_cpu_usage, parse_cpu_times, read_proc_stat
-from collector.memory import parse_meminfo, read_meminfo
-from collector.load import parse_loadavg, read_loadavg
+from collector.cpu import get_cpu_usage_ratio, parse_cpu_times, read_proc_stat
+from collector.memory import get_memory_info
+from collector.load import get_load_average
 from collector.tcp import get_tcp_stats
 from collector.process import count_zombie_processes
-
 
 cpu_usage = Gauge("sentinel_cpu_usage_ratio", "CPU usage ratio")
 mem_available = Gauge("sentinel_mem_available_kb", "Available memory in KB")
@@ -29,15 +28,15 @@ def update_metrics():
     if _prev_cpu_times is None:
         cpu_usage.set(0.0)
     else:
-        cpu_percent = calculate_cpu_usage(_prev_cpu_times, curr_cpu_times)
-        cpu_usage.set(cpu_percent / 100.0)
+        cpu_ratio = get_cpu_usage_ratio(_prev_cpu_times, curr_cpu_times)
+        cpu_usage.set(cpu_ratio)
     _prev_cpu_times = curr_cpu_times
 
-    memory_info = parse_meminfo(read_meminfo())
+    memory_info = get_memory_info()
     mem_available.set(memory_info.get("MemAvailable", 0))
     mem_total.set(memory_info.get("MemTotal", 0))
 
-    load_info = parse_loadavg(read_loadavg())
+    load_info = get_load_average()
     load1.set(load_info.get("load1", 0.0))
 
     tcp_stats = get_tcp_stats()

@@ -31,3 +31,7 @@ def get_memory_usage_percent(path="/proc/meminfo"):
         return 0.0
 
     return (total - available) / total * 100
+
+def get_memory_info(path="/proc/meminfo"):
+    lines = read_meminfo(path)
+    return parse_meminfo(lines)
