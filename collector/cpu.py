@@ -1,6 +1,6 @@
 import time
 
-cpu_state = [
+cpu_state = (
     "user",
     "nice",
     "system",
@@ -11,7 +11,7 @@ cpu_state = [
     "steal",
     "guest",
     "guest_nice"
-]
+    )
 
 # 获取/proc/stat第一行CPU数据
 def get_cpu(file_path="/proc/stat"):
