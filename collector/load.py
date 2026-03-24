@@ -10,8 +10,8 @@ def get_loadavg(file_path = '/proc/loadavg'):
     with open(file_path,'r',encoding='utf-8') as f:
         return f.readline().strip()
 
-def parse_loadavg():
-    lines = get_loadavg().split()
+def parse_loadavg(file_path = '/proc/loadavg'):
+    lines = get_loadavg(file_path).split()
     load_value = list(map(float,lines[0:3]))
     load_dict = dict(zip(LOADAVG_KEYS,load_value))
     return load_dict
