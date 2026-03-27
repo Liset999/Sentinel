@@ -1,6 +1,7 @@
 from .memory import calculate_mem
 from .cpu import get_cpu_usage , calculate_cpu
 from .load import parse_loadavg
+from .process import list_proc , parse_proc
 
 __version__ = '1.0.0'
 
@@ -8,7 +9,9 @@ __all__ = [
     "calculate_mem",
     "get_cpu_usage",
     "calculate_cpu",
-    "parse_loadavg"
+    "parse_loadavg",
+    "list_proc",
+    "parse_proc"
 ]
 
 
