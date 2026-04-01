@@ -1,49 +1,54 @@
 import os
 
-def parse_process_stat(content: str) -> str:
-    content = content.strip()
-    if not content:
-        raise ValueError("empty stat content")
+# 进程状态映射字典
+process_state = {
+    'R': 'Running',
+    'S': 'Interruptible Sleep',
+    'D': 'Uninterruptible Disk Sleep',
+    'Z': 'Zombie',
+    'T': 'Stopped(by signal)',
+    't': 'Tracing Stop'
+}
 
-    right_paren = content.rfind(")")
-    if right_paren == -1:
-        raise ValueError("invalid stat format")
+def list_proc(proc_dir='/proc'):
+    """获取所有数字PID目录"""
+    lines = os.listdir(proc_dir)
+    pids = []
+    for proc in lines:
+        if proc.isdigit():
+            pids.append(proc)
+    return pids
 
-    rest = content[right_paren + 1 :].strip()
-    fields = rest.split()
-    if not fields:
-        raise ValueError("missing process state")
+def parse_proc(proc_dir='/proc'):
+    """解析进程状态并统计"""
+    pids = list_proc(proc_dir)
+    metrics = {state: 0 for state in process_state.values()}
 
-    return fields[0]
-
-def read_process_stat(pid: str, proc_root: str = "/proc") -> str:
-        path = f"{proc_root}/{pid}/stat"
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read()
-
-
-
-def count_zombie_processes(proc_root: str = "/proc") -> int:
-    zombie_count = 0
-    for entry in os.listdir(proc_root):
-        if not entry.isdigit():
-            continue
-
+    # 遍历所有PID
+    for pid in pids:
         try:
-            content = read_process_stat(entry, proc_root)
-            state = parse_process_stat(content)
+            # 拼接文件路径
+            file_path = os.path.join(proc_dir, pid, 'stat')
+            with open(file_path, 'r', encoding='utf-8') as f:
+                # ✅ 关键修复：这里必须缩进！！
+                content = f.read()
+                # 找到最后一个右括号
+                right_paren = content.rfind(')')
+                # 提取状态字符
+                status = content[right_paren + 2]
+
+                # 统计数量
+                if status in process_state:
+                    metrics[process_state[status]] += 1
+
+        # 进程退出，忽略错误
         except FileNotFoundError:
             continue
-        except PermissionError:
-            continue
-        except ValueError:
-            continue
 
-        if state == "Z":
-            zombie_count += 1
+    return metrics
 
-    return zombie_count
-
-if __name__ == "__main__":
-    zombie_count = count_zombie_processes()
-    print(f"ZOMBIE: {zombie_count}")
+if __name__ == '__main__':
+    # 直接运行查看系统进程状态
+    result = parse_proc()
+    for state, count in result.items():
+        print(f"{state}: {count}")

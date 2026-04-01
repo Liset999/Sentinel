@@ -1,9 +1,3 @@
-from __future__ import annotations
-
-from collections import Counter
-from typing import Dict
-
-
 TCP_STATES = {
     "01": "ESTABLISHED",
     "02": "SYN_SENT",
@@ -16,49 +10,32 @@ TCP_STATES = {
     "09": "LAST_ACK",
     "0A": "LISTEN",
     "0B": "CLOSING",
+    "0C": "NEW_SYN_RECV",
 }
 
+def parse_tcp(file_path = '/proc/net/tcp'):
 
-def parse_tcp_table(content: str) -> Dict[str, int]:
-    lines = content.splitlines()
-    if not lines:
-        return {}
+    metrics = {state: 0 for state in TCP_STATES.values()}
 
-    state_counter: Counter[str] = Counter()
+    with open(file_path,'r',encoding='utf-8') as f:
+        next(f)
+        for line in f:
+            st_hex = line[34:36]
+            if st_hex in TCP_STATES:
+                metrics[TCP_STATES[st_hex]] += 1
 
-    for line in lines[1:]:
-        line = line.strip()
-        if not line:
-            continue
+    return metrics
 
-        fields = line.split()
-        if len(fields) < 4:
-            continue
-
-        state_hex = fields[3].upper()
-        state_name = TCP_STATES.get(state_hex, f"UNKNOWN_{state_hex}")
-        state_counter[state_name] += 1
-
-    return dict(state_counter)
+if __name__ == '__main__':
+    matrics = parse_tcp()
+    for state,count in matrics.items():
+        print(f'{state}: {count}')
 
 
-def read_tcp_table(path: str = "/proc/net/tcp") -> str:
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
 
 
-def get_tcp_stats(path: str = "/proc/net/tcp") -> Dict[str, int]:
-    try:
-        content = read_tcp_table(path)
-    except FileNotFoundError:
-        return {}
-    except PermissionError:
-        return {}
-
-    return parse_tcp_table(content)
 
 
-if __name__ == "__main__":
-    stats = get_tcp_stats()
-    for state, count in sorted(stats.items()):
-        print(f"{state}: {count}")
+
+
+

@@ -1,33 +1,32 @@
-def read_meminfo(path="/proc/meminfo"):
-    with open(path, "r", encoding="utf-8") as f:
-        return f.readlines()
+import time
 
 
-def parse_meminfo(lines):
-    result = {}
+def get_mem (file_path='/proc/meminfo'):
+    with open(file_path,'r',encoding='utf-8') as f:
+        mem = {}
+        target_key = ['MemTotal','MemFree','MemAvailable']
+        for line in f:
+            key = line.split(':',1)[0]
 
-    for line in lines:
-        parts = line.split()
+            if key in target_key:
+                value = int(line.split()[1])
+                mem[key] = value
+            if len(mem) == 3:
+                break
+    return mem
 
-        if len(parts) < 2:
-            continue
+def calculate_mem ():
+    mem = get_mem()
+    mem_usage = (1 - (mem['MemAvailable'] / mem['MemTotal'])) * 100
+    return round(mem_usage,2)
+if __name__ == "__main__":
+    while True:
+        mem_usage = calculate_mem()
+        print(f'{mem_usage}%')
+        time.sleep(1)
 
-        key = parts[0].rstrip(":")
-        value = int(parts[1])
-
-        result[key] = value
-
-    return result
 
 
-def get_memory_usage_percent(path="/proc/meminfo"):
-    lines = read_meminfo(path)
-    data = parse_meminfo(lines)
 
-    total = data.get("MemTotal", 0)
-    available = data.get("MemAvailable", 0)
 
-    if total == 0:
-        return 0.0
 
-    return (total - available) / total * 100
