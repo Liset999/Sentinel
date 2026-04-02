@@ -1,8 +1,8 @@
-from cpu import calculate_cpu, get_cpu_usage
-from memory import calculate_mem
-from load import parse_loadavg
-from process import parse_proc
-from tcp import parse_tcp
+from .cpu import calculate_cpu, get_cpu_usage
+from .memory import calculate_mem
+from .load import parse_loadavg
+from .process import parse_proc
+from .tcp import parse_tcp
 
 def get_all_metrics():
     metrics = {}
