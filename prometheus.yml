@@ -9,5 +9,4 @@ scrape_configs:
       # ⚠️ 注意：如果你在 Docker 中运行 Prometheus
       # 请将 127.0.0.1 替换为你的宿主机实际内网 IP（如 192.168.x.x）
       # 或者在启动时使用 --add-host=host.docker.internal:host-gateway
-      - targets: ['host.docker.internal:8000']
-
+      - targets: ['exporter:8000']

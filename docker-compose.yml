@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 1. 自定义 Python 采集器
+  exporter:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentinel_exporter
+    # 宿主机模式：监控宿主机推荐直接共享 PID 命名空间
+    pid: "host"
+    ports:
+      - "8000:8000"
+    volumes:
+      # 核心逻辑：只读挂载宿主机 proc
+      - /proc:/host/proc:ro
+    environment:
+      - PROC_DIR=/host/proc
+      - PYTHONUNBUFFERED=1
+    networks:
+      - sentinel_net
+    restart: unless-stopped
+
+
+  # 2. Prometheus 服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # 挂载本地配置文件，:z 用于处理 Rocky Linux 的 SELinux 权限
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:z
+      # 建议增加数据持久化，防止容器重启后历史数据丢失
+      - prometheus_data:/prometheus
+    depends_on:
+      - exporter
+    networks:
+      - sentinel_net
+    restart: unless-stopped
+
+  # 3. Grafana 服务
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      # --- 新增自动配置挂载 ---
+      - ./grafana/provisioning:/etc/grafana/provisioning:z
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:z
+    depends_on:
+      - prometheus
+    networks:
+      - sentinel_net
+    restart: unless-stopped
+
+# 定义持久化卷
+volumes:
+  prometheus_data:
+  grafana_data:
+
+# 定义内部桥接网络
+networks:
+  sentinel_net:
+    driver: bridge

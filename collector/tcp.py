@@ -1,3 +1,7 @@
+import os
+
+PROC_DIR = os.environ.get("PROC_DIR", "/proc")
+
 TCP_STATES = {
     "01": "ESTABLISHED",
     "02": "SYN_SENT",
@@ -13,7 +17,7 @@ TCP_STATES = {
     "0C": "NEW_SYN_RECV",
 }
 
-def parse_tcp(file_path = '/proc/net/tcp'):
+def parse_tcp(file_path = os.path.join(PROC_DIR, 'net', 'tcp')):
 
     metrics = {state: 0 for state in TCP_STATES.values()}
 
@@ -30,7 +34,6 @@ if __name__ == '__main__':
     matrics = parse_tcp()
     for state,count in matrics.items():
         print(f'{state}: {count}')
-
 
 
 

@@ -1,0 +1,41 @@
+# --- 1. Python 运行缓存 (必须排除，否则会引起路径或权限冲突) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- 2. 虚拟环境 (绝不能打进镜像，镜像内会重新安装) ---
+.venv/
+venv/
+ENV/
+env/
+bin/
+lib/
+include/
+
+# --- 3. Git 仓库信息 (保护源码隐私，减小镜像体积) ---
+.git/
+.gitignore
+
+# --- 4. 文档与说明 (容器运行不需要这些) ---
+docs/
+README.md
+LICENSE
+snapshots/
+tests/
+Makefile
+
+# --- 5. 监控组件配置与数据 (这些通常通过 docker-compose 挂载，不打入镜像) ---
+prometheus.yml
+dashboards/
+rules/
+ai/
+chaos/
+
+# --- 6. 操作系统垃圾文件 ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
