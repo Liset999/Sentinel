@@ -1,7 +1,9 @@
 import time
+import os
 
+PROC_DIR = os.environ.get("PROC_DIR", "/proc")
 
-def get_mem (file_path='/proc/meminfo'):
+def get_mem (file_path=os.path.join(PROC_DIR, "meminfo")):
     with open(file_path,'r',encoding='utf-8') as f:
         mem = {}
         target_key = ['MemTotal','MemFree','MemAvailable']
@@ -24,7 +26,6 @@ if __name__ == "__main__":
         mem_usage = calculate_mem()
         print(f'{mem_usage}%')
         time.sleep(1)
-
 
 
 

@@ -1,6 +1,9 @@
 import time
+import os
 
-cpu_state = (
+PROC_DIR = os.environ.get("PROC_DIR", "/proc")
+
+CPU_STATE = (
     "user",
     "nice",
     "system",
@@ -11,10 +14,10 @@ cpu_state = (
     "steal",
     "guest",
     "guest_nice"
-    )
+)
 
 # 获取/proc/stat第一行CPU数据
-def get_cpu(file_path="/proc/stat"):
+def get_cpu(file_path=os.path.join(PROC_DIR, "stat")):
     with open(file_path, "r", encoding="utf-8") as f:
         return f.readline().strip()
 
@@ -22,7 +25,7 @@ def get_cpu(file_path="/proc/stat"):
 def parse_cpu():
     first_line = get_cpu().split()
     cpu_nums = list(map(int, first_line[1:]))  # 切掉表头"cpu"，保留数字部分
-    cpu_dict = dict(zip(cpu_state, cpu_nums))  # 现在键名和数值完全匹配
+    cpu_dict = dict(zip(CPU_STATE, cpu_nums))  # 现在键名和数值完全匹配
     return cpu_dict
 
 # 计算total和idle

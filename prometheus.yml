@@ -1,0 +1,12 @@
+# prometheus.yml
+global:
+  scrape_interval: 15s # 全局采集频率，15秒一次
+  evaluation_interval: 15s # 告警规则的计算周期
+
+scrape_configs:
+  - job_name: 'sentinel_monitor'
+    static_configs:
+      # ⚠️ 注意：如果你在 Docker 中运行 Prometheus
+      # 请将 127.0.0.1 替换为你的宿主机实际内网 IP（如 192.168.x.x）
+      # 或者在启动时使用 --add-host=host.docker.internal:host-gateway
+      - targets: ['exporter:8000']

@@ -1,5 +1,7 @@
 import os
+import os
 
+PROC_DIR = os.environ.get("PROC_DIR", "/proc")
 # 进程状态映射字典
 process_state = {
     'R': 'Running',
@@ -10,7 +12,7 @@ process_state = {
     't': 'Tracing Stop'
 }
 
-def list_proc(proc_dir='/proc'):
+def list_proc(proc_dir=PROC_DIR):
     """获取所有数字PID目录"""
     lines = os.listdir(proc_dir)
     pids = []
@@ -19,7 +21,7 @@ def list_proc(proc_dir='/proc'):
             pids.append(proc)
     return pids
 
-def parse_proc(proc_dir='/proc'):
+def parse_proc(proc_dir=PROC_DIR):
     """解析进程状态并统计"""
     pids = list_proc(proc_dir)
     metrics = {state: 0 for state in process_state.values()}
