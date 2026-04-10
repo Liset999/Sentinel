@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. 自定义 Python 采集器
   exporter:
@@ -7,12 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: sentinel_exporter
-    # 宿主机模式：监控宿主机推荐直接共享 PID 命名空间
     pid: "host"
     ports:
       - "8000:8000"
     volumes:
-      # 核心逻辑：只读挂载宿主机 proc
       - /proc:/host/proc:ro
       - ./rules:/app/rules:ro
     environment:
@@ -24,6 +20,27 @@ services:
       - sentinel_net
     restart: unless-stopped
 
+  # 1.5 规则热重载边车容器 (改为持续运行监听)
+  rule_parser:
+    image: python:3.9-alpine
+    container_name: sentinel_rule_parser
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # 必须挂载整个目录，以便实时读取宿主机的 .env 变化
+      - ./:/app:z
+    working_dir: /app
+    # 改为持续运行
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      # 新增 requests 依赖，并改为运行 watcher.py
+      - "pip install --no-cache-dir PyYAML python-dotenv requests && python rules/watcher.py"
+    networks:
+      - sentinel_net
 
   # 2. Prometheus 服务
   prometheus:
@@ -32,19 +49,24 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      # 挂载配置文件
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:z
-      # 挂载规则目录 (确保这里和上面的对齐，且都是字符串)
       - ./rules:/etc/prometheus/rules:z
-      # 挂载数据持久化卷 (建议放在最后)
       - prometheus_data:/prometheus
+    # 恢复 Prometheus 默认的启动命令（去掉自定义的 entrypoint 和 command）
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
     depends_on:
-      - exporter
+      exporter:
+        condition: service_started
+      # 关键点：由于 parser 现在是无限循环监听，所以改为等待它启动即可 (service_started)
+      rule_parser:
+        condition: service_started
     networks:
       - sentinel_net
     restart: unless-stopped
 
-  # 3. Grafana 服务
+  # 3. Grafana 服务 (保持不变)
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -52,7 +74,6 @@ services:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      # --- 新增自动配置挂载 ---
       - ./grafana/provisioning:/etc/grafana/provisioning:z
       - ./grafana/dashboards:/var/lib/grafana/dashboards:z
     depends_on:
@@ -61,12 +82,25 @@ services:
       - sentinel_net
     restart: unless-stopped
 
-# 定义持久化卷
+  # 4. alertmanager 告警 (保持不变)
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/config.yml
+    depends_on:
+      - prometheus
+    networks:
+      - sentinel_net
+    restart: unless-stopped
+
+# 持久化卷和网络定义 (保持不变)
 volumes:
   prometheus_data:
   grafana_data:
 
-# 定义内部桥接网络
 networks:
   sentinel_net:
     driver: bridge
