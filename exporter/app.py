@@ -1,44 +1,42 @@
 # exporter/app.py
 import time
-from prometheus_client import start_http_server
-# 引入企业级核心神器：REGISTRY（注册表）和 MetricFamily（指标家族）
+import subprocess
+import os
+from flask import Flask, request, jsonify, Response
+
+# 🚨 CORRECTED PROMETHEUS IMPORTS 🚨
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, REGISTRY
 
-# 导入你的大管家
+# 导入你的采集器
 from collector.collector import get_all_metrics
 
-
 class SentinelCollector:
-
     def collect(self):
-        # 只有当有人访问 /metrics 时，这个函数才会被触发！
-        # 1. 现场去抓取最新数据
         metrics = get_all_metrics()
 
         try:
-            # --- 1. 提取 CPU (Counter) ---
+            # CPU
             if "cpu" in metrics and "error" not in metrics["cpu"]:
-                # 动态创建一个 Counter 家族，允许直接传绝对值
                 c_cpu = CounterMetricFamily('sentinel_cpu_jiffies_total', 'CPU jiffies', labels=['mode'])
                 for mode, val in metrics["cpu"].items():
                     c_cpu.add_metric([mode], val)
-                yield c_cpu  # 交货！
+                yield c_cpu
 
-            # --- 2. 提取 LoadAvg (Gauge) ---
+            # LoadAvg
             if "loadavg" in metrics and "error" not in metrics["loadavg"]:
                 g_load = GaugeMetricFamily('sentinel_loadavg', 'System load average', labels=['interval'])
                 for interval, val in metrics["loadavg"].items():
                     g_load.add_metric([interval], val)
                 yield g_load
 
-            # --- 3. 提取 Memory (Gauge) ---
+            # Memory
             if "memory" in metrics and isinstance(metrics["memory"], (float, int)):
                 g_mem = GaugeMetricFamily('sentinel_memory_usage', 'Memory usage value')
-                # 单值数据不需要传标签，直接传空列表 []
                 g_mem.add_metric([], metrics["memory"])
                 yield g_mem
 
-            # --- 4. 提取 proc (进程状态 Gauge) ---
+            # Process count
             if "proc" in metrics and "error" not in metrics["proc"]:
                 g_proc = GaugeMetricFamily('sentinel_process_count', 'Process count by state', labels=['state'])
                 for state, val in metrics["proc"].items():
@@ -46,7 +44,7 @@ class SentinelCollector:
                     g_proc.add_metric([clean_state], val)
                 yield g_proc
 
-            # --- 5. 提取 TCP 状态 (Gauge) ---
+            # TCP connections
             if "tcp" in metrics and "error" not in metrics["tcp"]:
                 g_tcp = GaugeMetricFamily('sentinel_tcp_connections', 'TCP connections by state', labels=['state'])
                 for state, val in metrics["tcp"].items():
@@ -57,15 +55,43 @@ class SentinelCollector:
         except Exception as e:
             print(f"数据解析异常: {e}")
 
+# ==================== Flask App ====================
+app = Flask(__name__)
+
+# 把 Prometheus Collector 注册到 Flask
+REGISTRY.register(SentinelCollector())
+
+# 使用 Flask 路由提供 metrics
+@app.route('/metrics')
+def metrics():
+    """提供给 Prometheus 拉取数据的接口"""
+    return Response(generate_latest(REGISTRY), mimetype=CONTENT_TYPE_LATEST)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    """Alertmanager 触发告警时会 POST 到这里"""
+    alert_data = request.get_json()
+
+    print("🚨 收到 Alertmanager 告警！")
+    print(alert_data)  # 打印告警内容，方便调试
+
+    # 执行 snapshot.sh
+    try:
+        snapshot_path = os.path.join(os.path.dirname(__file__), "..", "snapshot", "snapshot.sh")
+        result = subprocess.run(['bash', snapshot_path], capture_output=True, text=True, timeout=10)
+
+        if result.returncode == 0:
+            print("✅ snapshot.sh 执行成功")
+            print(result.stdout)
+        else:
+            print(f"❌ snapshot.sh 执行失败: {result.stderr}")
+    except Exception as e:
+        print(f"执行 snapshot.sh 异常: {e}")
+
+    return jsonify({"status": "success", "message": "snapshot executed"}), 200
 
 if __name__ == '__main__':
-    # 2. 把我们的采集器注册到全局系统中
-    REGISTRY.register(SentinelCollector())
-
-    # 3. 开门营业
-    start_http_server(8000)
-    print("Sentinel Exporter (企业级按需采集版) is running on http://localhost:8000/metrics ...")
-
-    # 4. 主线程什么都不干，只是保持程序不退出（不再有 5 秒一次的暴力死循环了）
-    while True:
-        time.sleep(10)
+    print("🚀 Sentinel Exporter + Webhook 已启动")
+    print("   Metrics  → http://localhost:8000/metrics")
+    print("   Webhook  → http://localhost:8000/webhook")
+    app.run(host='0.0.0.0', port=8000, debug=False)

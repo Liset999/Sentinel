@@ -5,14 +5,13 @@ global:
 
 # 1. 告诉 Prometheus 规则文件在哪里
 rule_files:
-  - "/etc/prometheus/rules/*.yaml"
+  - "/etc/prometheus/rules/processed_rules.yaml"
 
 # 2. 告诉 Prometheus 如果出事了把消息发给谁
 alerting:
   alertmanagers:
     - static_configs:
-        - targets:
-          # - alertmanager:9093
+      - targets: ['alertmanager:9093']
 
 scrape_configs:
   - job_name: 'sentinel_monitor'

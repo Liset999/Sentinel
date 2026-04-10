@@ -1,3 +1,5 @@
 prometheus_client
 psutil
 PyYAML
+flask
+python-dotenv
