@@ -1,0 +1,19 @@
+groups:
+- name: sentinel_alerts
+  rules:
+  - alert: high_memory_usage
+    expr: sentinel_memory_usage > 40
+    annotations:
+      description: 系统内存使用率过高
+  - alert: zombie_processes
+    expr: sentinel_process_count{state="zombie"} > 0
+    annotations:
+      description: 系统中出现僵尸进程
+  - alert: high_time_wait
+    expr: sentinel_tcp_connections{state="time_wait"} > 80
+    annotations:
+      description: TCP TIME_WAIT 连接数过高
+  - alert: high_load_average
+    expr: sentinel_loadavg{interval="load5"} > 3.5
+    annotations:
+      description: 系统 5 分钟负载过高

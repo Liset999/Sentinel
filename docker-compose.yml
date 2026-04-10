@@ -14,9 +14,12 @@ services:
     volumes:
       # 核心逻辑：只读挂载宿主机 proc
       - /proc:/host/proc:ro
+      - ./rules:/app/rules:ro
     environment:
       - PROC_DIR=/host/proc
       - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
     networks:
       - sentinel_net
     restart: unless-stopped
@@ -29,9 +32,11 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      # 挂载本地配置文件，:z 用于处理 Rocky Linux 的 SELinux 权限
+      # 挂载配置文件
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:z
-      # 建议增加数据持久化，防止容器重启后历史数据丢失
+      # 挂载规则目录 (确保这里和上面的对齐，且都是字符串)
+      - ./rules:/etc/prometheus/rules:z
+      # 挂载数据持久化卷 (建议放在最后)
       - prometheus_data:/prometheus
     depends_on:
       - exporter
