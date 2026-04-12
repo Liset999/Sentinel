@@ -16,4 +16,5 @@ alerting:
 scrape_configs:
   - job_name: 'sentinel_monitor'
     static_configs:
-      - targets: ['exporter:8000']
+      # 👇 修改这里：使用内部域名指向宿主机上的 exporter
+      - targets: ['host.docker.internal:8000']
