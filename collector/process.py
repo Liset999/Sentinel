@@ -1,5 +1,4 @@
 import os
-import os
 
 PROC_DIR = os.environ.get("PROC_DIR", "/proc")
 # 进程状态映射字典

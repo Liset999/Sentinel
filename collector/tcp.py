@@ -31,7 +31,7 @@ def parse_tcp(file_path = os.path.join(PROC_DIR, 'net', 'tcp')):
     return metrics
 
 if __name__ == '__main__':
-    matrics = parse_tcp()
+    metrics = parse_tcp()
     for state,count in matrics.items():
         print(f'{state}: {count}')
 
