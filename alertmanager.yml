@@ -11,5 +11,5 @@ route:
 receivers:
   - name: 'webhook'
     webhook_configs:
-      - url: 'http://exporter:8000/webhook'   # 暂时调用 exporter 容器的 /webhook 接口（后面可以改成 snapshot）
+      - url: 'http://host.docker.internal:8000/webhook'   # 暂时调用 exporter 容器的 /webhook 接口（后面可以改成 snapshot）
         send_resolved: true                    # 问题恢复后也通知

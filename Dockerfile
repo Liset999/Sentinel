@@ -7,6 +7,15 @@ WORKDIR /app
 # 3. 设置环境变量，确保 Python 输出直接打印到控制台，不留缓存
 ENV PYTHONUNBUFFERED=1
 
+# ==========================================
+# 👇 新增：安装系统运维工具 (procps, iproute2, kmod)
+# ==========================================
+RUN apt-get update && apt-get install -y \
+    procps \
+    iproute2 \
+    kmod \
+    && rm -rf /var/lib/apt/lists/*
+
 # 4. 先复制依赖文件（利用 Docker 缓存机制，若依赖未变则跳过安装阶段）
 COPY requirements.txt .
 

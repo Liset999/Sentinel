@@ -2,7 +2,7 @@ groups:
 - name: sentinel_alerts
   rules:
   - alert: high_memory_usage
-    expr: sentinel_memory_usage > 40
+    expr: sentinel_memory_usage > 80
     annotations:
       description: 系统内存使用率过高
   - alert: zombie_processes

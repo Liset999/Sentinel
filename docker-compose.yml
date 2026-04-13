@@ -6,18 +6,19 @@ services:
       dockerfile: Dockerfile
     container_name: sentinel_exporter
     pid: "host"
-    ports:
-      - "8000:8000"
+    network_mode: "host"
     volumes:
       - /proc:/host/proc:ro
       - ./rules:/app/rules:ro
+      - ./artifacts/snapshots:/app/artifacts/snapshots
+      - /var/log/messages:/host/var/log/messages:ro
     environment:
       - PROC_DIR=/host/proc
       - PYTHONUNBUFFERED=1
     env_file:
       - .env
-    networks:
-      - sentinel_net
+#    networks:
+#      - sentinel_net
     restart: unless-stopped
 
   # 1.5 规则热重载边车容器 (改为持续运行监听)
@@ -53,6 +54,8 @@ services:
       - ./rules:/etc/prometheus/rules:z
       - prometheus_data:/prometheus
     # 恢复 Prometheus 默认的启动命令（去掉自定义的 entrypoint 和 command）
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--web.enable-lifecycle"
@@ -89,9 +92,11 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - ./alertmanager.yml:/etc/alertmanager/config.yml
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
     depends_on:
       - prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - sentinel_net
     restart: unless-stopped

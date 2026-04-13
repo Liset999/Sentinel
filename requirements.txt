@@ -3,3 +3,4 @@ psutil
 PyYAML
 flask
 python-dotenv
+aiohttp>=3.9.0
