@@ -1,0 +1,346 @@
+========== 1. free (内存状态) ==========
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       932Mi        80Mi       5.7Mi       823Mi       742Mi
+Swap:          1.0Gi        36Mi       987Mi
+
+========== 2. top (CPU及进程概览) ==========
+top - 13:48:07 up  3:15,  0 users,  load average: 5.67, 3.69, 1.60
+Tasks: 251 total,   2 running, 249 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  8.6 us, 19.1 sy,  0.0 ni, 51.2 id,  0.0 wa, 14.2 hi,  6.8 si,  0.0 st 
+MiB Mem :   1674.6 total,     78.2 free,    933.8 used,    823.7 buff/cache     
+MiB Swap:   1024.0 total,    987.7 free,     36.2 used.    740.8 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  77405 root      20   0 2338804  14124   3832 S  50.0   0.8   3:39.56 docker-+
+  77567 root      20   0   41624  35132  13124 R  40.0   2.0   3:36.77 python3
+   1170 root      20   0 2802748  96308  38148 S   5.0   5.6   0:36.10 dockerd
+  77339 root      20   0 1235340  14780   7484 S   5.0   0.9   0:16.60 contain+
+  77449 101       20   0   10844   3180   1192 S   5.0   0.2   0:07.73 nginx
+  77451 101       20   0   10840   3176   1192 S   5.0   0.2   0:07.74 nginx
+  77452 101       20   0   10840   3176   1192 S   5.0   0.2   0:07.68 nginx
+  77454 101       20   0   10840   3176   1192 S   5.0   0.2   0:07.71 nginx
+  77455 101       20   0   10840   3176   1192 S   5.0   0.2   0:07.69 nginx
+  79376 root      20   0    7804   5124   3096 R   5.0   0.3   0:00.12 top
+      1 root      20   0  174332  14768   8984 S   0.0   0.9   0:07.61 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.13 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_wo+
+
+========== 3. ps (进程全景图) ==========
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 10:32 ?        00:00:07 /usr/lib/systemd/systemd --switched-root --system --deserialize 31
+root           2       0  0 10:32 ?        00:00:00 [kthreadd]
+root           3       2  0 10:32 ?        00:00:00 [pool_workqueue_]
+root           4       2  0 10:32 ?        00:00:00 [kworker/R-rcu_g]
+root           5       2  0 10:32 ?        00:00:00 [kworker/R-sync_]
+root           6       2  0 10:32 ?        00:00:00 [kworker/R-slub_]
+root           7       2  0 10:32 ?        00:00:00 [kworker/R-netns]
+root           9       2  0 10:32 ?        00:00:00 [kworker/0:0H-events_highpri]
+root          10       2  0 10:32 ?        00:00:00 [kworker/u512:0-events_unbound]
+root          11       2  0 10:32 ?        00:00:00 [kworker/R-mm_pe]
+root          12       2  0 10:32 ?        00:00:00 [kworker/u512:1-netns]
+root          13       2  0 10:32 ?        00:00:00 [rcu_tasks_kthre]
+root          14       2  0 10:32 ?        00:00:00 [rcu_tasks_rude_]
+root          15       2  0 10:32 ?        00:00:00 [rcu_tasks_trace]
+root          16       2  0 10:32 ?        00:00:00 [ksoftirqd/0]
+root          17       2  0 10:32 ?        00:00:04 [rcu_preempt]
+root          18       2  0 10:32 ?        00:00:00 [rcu_exp_par_gp_]
+root          19       2  0 10:32 ?        00:00:00 [rcu_exp_gp_kthr]
+root          20       2  0 10:32 ?        00:00:00 [migration/0]
+root          21       2  0 10:32 ?        00:00:00 [idle_inject/0]
+root          23       2  0 10:32 ?        00:00:00 [cpuhp/0]
+root          24       2  0 10:32 ?        00:00:00 [cpuhp/1]
+root          25       2  0 10:32 ?        00:00:00 [idle_inject/1]
+root          26       2  0 10:32 ?        00:00:01 [migration/1]
+root          27       2  0 10:32 ?        00:00:00 [ksoftirqd/1]
+root          30       2  0 10:32 ?        00:00:00 [cpuhp/2]
+root          31       2  0 10:32 ?        00:00:00 [idle_inject/2]
+root          32       2  0 10:32 ?        00:00:01 [migration/2]
+root          33       2  0 10:32 ?        00:00:01 [ksoftirqd/2]
+root          35       2  0 10:32 ?        00:00:00 [kworker/2:0H-events_highpri]
+root          36       2  0 10:32 ?        00:00:00 [cpuhp/3]
+root          37       2  0 10:32 ?        00:00:00 [idle_inject/3]
+root          38       2  0 10:32 ?        00:00:01 [migration/3]
+root          39       2  0 10:32 ?        00:00:00 [ksoftirqd/3]
+root          41       2  0 10:32 ?        00:00:00 [kworker/3:0H-events_highpri]
+root          42       2  0 10:32 ?        00:00:00 [cpuhp/4]
+root          43       2  0 10:32 ?        00:00:00 [idle_inject/4]
+root          44       2  0 10:32 ?        00:00:01 [migration/4]
+root          45       2  0 10:32 ?        00:00:00 [ksoftirqd/4]
+root          47       2  0 10:32 ?        00:00:00 [kworker/4:0H-events_highpri]
+root          48       2  0 10:32 ?        00:00:00 [cpuhp/5]
+root          49       2  0 10:32 ?        00:00:00 [idle_inject/5]
+root          50       2  0 10:32 ?        00:00:01 [migration/5]
+root          51       2  0 10:32 ?        00:00:00 [ksoftirqd/5]
+root          53       2  0 10:32 ?        00:00:00 [kworker/5:0H-events_highpri]
+root          54       2  0 10:32 ?        00:00:00 [cpuhp/6]
+root          55       2  0 10:32 ?        00:00:00 [idle_inject/6]
+root          56       2  0 10:32 ?        00:00:01 [migration/6]
+root          57       2  0 10:32 ?        00:00:00 [ksoftirqd/6]
+root          59       2  0 10:32 ?        00:00:00 [kworker/6:0H-events_highpri]
+root          60       2  0 10:32 ?        00:00:00 [cpuhp/7]
+root          61       2  0 10:32 ?        00:00:00 [idle_inject/7]
+root          62       2  0 10:32 ?        00:00:01 [migration/7]
+root          63       2  0 10:32 ?        00:00:00 [ksoftirqd/7]
+root          65       2  0 10:32 ?        00:00:00 [kworker/7:0H-events_highpri]
+root          73       2  0 10:32 ?        00:00:01 [kworker/u513:1-events_unbound]
+root          74       2  0 10:32 ?        00:00:00 [kdevtmpfs]
+root          75       2  0 10:32 ?        00:00:00 [kworker/R-inet_]
+root          76       2  0 10:32 ?        00:00:00 [kauditd]
+root          77       2  0 10:32 ?        00:00:00 [khungtaskd]
+root          78       2  0 10:32 ?        00:00:00 [oom_reaper]
+root          79       2  0 10:32 ?        00:00:00 [kworker/R-write]
+root          80       2  0 10:32 ?        00:00:02 [kcompactd0]
+root          81       2  0 10:32 ?        00:00:00 [ksmd]
+root          82       2  0 10:32 ?        00:00:04 [khugepaged]
+root          83       2  0 10:32 ?        00:00:00 [kworker/R-crypt]
+root          84       2  0 10:32 ?        00:00:00 [kworker/R-kinte]
+root          85       2  0 10:32 ?        00:00:00 [kworker/R-kbloc]
+root          86       2  0 10:32 ?        00:00:00 [irq/9-acpi]
+root          90       2  0 10:32 ?        00:00:00 [kworker/1:1-mm_percpu_wq]
+root          94       2  0 10:32 ?        00:00:00 [kworker/R-tpm_d]
+root          95       2  0 10:32 ?        00:00:00 [kworker/R-md]
+root          96       2  0 10:32 ?        00:00:00 [kworker/R-md_bi]
+root          97       2  0 10:32 ?        00:00:00 [kworker/R-edac-]
+root          98       2  0 10:32 ?        00:00:00 [watchdogd]
+root          99       2  0 10:32 ?        00:00:00 [kworker/4:1H-kblockd]
+root         100       2  0 10:32 ?        00:00:02 [kswapd0]
+root         117       2  0 10:32 ?        00:00:00 [kworker/R-kthro]
+root         121       2  0 10:32 ?        00:00:00 [irq/24-pciehp]
+root         122       2  0 10:32 ?        00:00:00 [irq/25-pciehp]
+root         123       2  0 10:32 ?        00:00:00 [irq/26-pciehp]
+root         124       2  0 10:32 ?        00:00:00 [irq/27-pciehp]
+root         125       2  0 10:32 ?        00:00:00 [irq/28-pciehp]
+root         126       2  0 10:32 ?        00:00:00 [irq/29-pciehp]
+root         127       2  0 10:32 ?        00:00:00 [irq/30-pciehp]
+root         128       2  0 10:32 ?        00:00:00 [irq/31-pciehp]
+root         129       2  0 10:32 ?        00:00:00 [irq/32-pciehp]
+root         130       2  0 10:32 ?        00:00:00 [irq/33-pciehp]
+root         131       2  0 10:32 ?        00:00:00 [irq/34-pciehp]
+root         132       2  0 10:32 ?        00:00:00 [irq/35-pciehp]
+root         133       2  0 10:32 ?        00:00:00 [irq/36-pciehp]
+root         134       2  0 10:32 ?        00:00:00 [irq/37-pciehp]
+root         135       2  0 10:32 ?        00:00:00 [irq/38-pciehp]
+root         136       2  0 10:32 ?        00:00:00 [irq/39-pciehp]
+root         137       2  0 10:32 ?        00:00:00 [irq/40-pciehp]
+root         138       2  0 10:32 ?        00:00:00 [irq/41-pciehp]
+root         139       2  0 10:32 ?        00:00:00 [irq/42-pciehp]
+root         140       2  0 10:32 ?        00:00:00 [irq/43-pciehp]
+root         141       2  0 10:32 ?        00:00:00 [irq/44-pciehp]
+root         142       2  0 10:32 ?        00:00:00 [irq/45-pciehp]
+root         143       2  0 10:32 ?        00:00:00 [irq/46-pciehp]
+root         144       2  0 10:32 ?        00:00:00 [irq/47-pciehp]
+root         145       2  0 10:32 ?        00:00:00 [irq/48-pciehp]
+root         146       2  0 10:32 ?        00:00:00 [irq/49-pciehp]
+root         147       2  0 10:32 ?        00:00:00 [irq/50-pciehp]
+root         148       2  0 10:32 ?        00:00:00 [irq/51-pciehp]
+root         149       2  0 10:32 ?        00:00:00 [irq/52-pciehp]
+root         150       2  0 10:32 ?        00:00:00 [irq/53-pciehp]
+root         151       2  0 10:32 ?        00:00:00 [irq/54-pciehp]
+root         152       2  0 10:32 ?        00:00:00 [irq/55-pciehp]
+root         153       2  0 10:32 ?        00:00:00 [kworker/R-acpi_]
+root         154       2  0 10:32 ?        00:00:00 [kworker/R-kmpat]
+root         155       2  0 10:32 ?        00:00:00 [kworker/R-kalua]
+root         156       2  0 10:32 ?        00:00:01 [kworker/4:2-events]
+root         158       2  0 10:32 ?        00:00:00 [kworker/R-mld]
+root         159       2  0 10:32 ?        00:00:00 [kworker/1:1H-kblockd]
+root         160       2  0 10:32 ?        00:00:00 [kworker/R-ipv6_]
+root         165       2  0 10:32 ?        00:00:00 [kworker/R-kstrp]
+root         169       2  0 10:32 ?        00:00:00 [kworker/u515:0]
+root         170       2  0 10:32 ?        00:00:00 [kworker/u516:0]
+root         171       2  0 10:32 ?        00:00:00 [kworker/u517:0]
+root         280       2  0 10:32 ?        00:00:00 [kworker/2:1H-kblockd]
+root         317       2  0 10:32 ?        00:00:00 [kworker/3:1H-kblockd]
+root         318       2  0 10:32 ?        00:00:00 [kworker/0:1H-xfs-log/dm-0]
+root         320       2  0 10:32 ?        00:00:00 [kworker/5:1H-xfs-log/dm-0]
+root         322       2  0 10:32 ?        00:00:00 [kworker/7:1H-xfs-log/dm-0]
+root         326       2  0 10:32 ?        00:00:00 [kworker/6:1H-xfs-log/dm-0]
+root         474       2  0 10:32 ?        00:00:04 [kworker/2:3-mm_percpu_wq]
+root         491       2  0 10:32 ?        00:00:00 [kworker/R-nvme-]
+root         492       2  0 10:32 ?        00:00:00 [kworker/R-nvme-]
+root         494       2  0 10:32 ?        00:00:00 [kworker/R-nvme-]
+root         495       2  0 10:32 ?        00:00:00 [kworker/R-nvme-]
+root         500       2  0 10:32 ?        00:00:00 [kworker/R-ata_s]
+root         503       2  0 10:32 ?        00:00:00 [scsi_eh_0]
+root         505       2  0 10:32 ?        00:00:00 [kworker/R-scsi_]
+root         506       2  0 10:32 ?        00:00:00 [scsi_eh_1]
+root         507       2  0 10:32 ?        00:00:00 [kworker/R-scsi_]
+root         534       2  0 10:32 ?        00:00:00 [kworker/1:2H]
+root         577       2  0 10:32 ?        00:00:00 [kworker/R-kdmfl]
+root         584       2  0 10:32 ?        00:00:00 [kworker/R-kdmfl]
+root         603       2  0 10:32 ?        00:00:00 [kworker/6:3-mm_percpu_wq]
+root         605       2  0 10:32 ?        00:00:00 [kworker/R-xfsal]
+root         606       2  0 10:32 ?        00:00:00 [kworker/R-xfs_m]
+root         608       2  0 10:32 ?        00:00:00 [kworker/R-xfs-b]
+root         609       2  0 10:32 ?        00:00:00 [kworker/R-xfs-c]
+root         610       2  0 10:32 ?        00:00:00 [kworker/R-xfs-r]
+root         611       2  0 10:32 ?        00:00:00 [kworker/R-xfs-b]
+root         612       2  0 10:32 ?        00:00:00 [kworker/R-xfs-i]
+root         613       2  0 10:32 ?        00:00:00 [kworker/R-xfs-l]
+root         614       2  0 10:32 ?        00:00:00 [kworker/R-xfs-c]
+root         615       2  0 10:32 ?        00:00:05 [xfsaild/dm-0]
+root         687       1  0 10:32 ?        00:00:00 /usr/lib/systemd/systemd-journald
+root         702       1  0 10:32 ?        00:00:01 /usr/lib/systemd/systemd-udevd
+root         729       2  0 10:32 ?        00:00:00 [kworker/R-xfs-b]
+root         730       2  0 10:32 ?        00:00:00 [kworker/R-xfs-c]
+root         731       2  0 10:32 ?        00:00:00 [kworker/R-xfs-r]
+root         732       2  0 10:32 ?        00:00:00 [kworker/R-xfs-b]
+root         733       2  0 10:32 ?        00:00:00 [kworker/R-xfs-i]
+root         734       2  0 10:32 ?        00:00:00 [kworker/R-xfs-l]
+root         735       2  0 10:32 ?        00:00:00 [kworker/R-xfs-c]
+root         736       2  0 10:32 ?        00:00:00 [xfsaild/nvme0n1]
+root         746       2  0 10:32 ?        00:00:00 [irq/81-vmw_vmci]
+root         747       2  0 10:32 ?        00:00:00 [irq/82-vmw_vmci]
+root         748       2  0 10:32 ?        00:00:00 [irq/83-vmw_vmci]
+root         770       2  0 10:32 ?        00:00:00 [irq/16-vmwgfx]
+root         771       2  0 10:32 ?        00:00:00 [kworker/R-ttm]
+root         776       1  0 10:32 ?        00:00:00 /sbin/auditd
+81           813       1  0 10:32 ?        00:00:00 /usr/bin/dbus-broker-launch --scope system --audit
+81           814     813  0 10:32 ?        00:00:00 dbus-broker --log 4 --controller 9 --machine-id 02b6f6ba4f694710bcd2c2587ff02740 --max-bytes 536870912 --max-fds 4096 --max-matches 131072 --audit
+root         817       1  0 10:32 ?        00:00:02 /usr/bin/python3 -s /usr/sbin/firewalld --nofork --nopid
+root         818       1  0 10:32 ?        00:00:01 /usr/sbin/irqbalance
+root         820       1  0 10:32 ?        00:00:00 /usr/lib/systemd/systemd-logind
+997          825       1  0 10:32 ?        00:00:00 /usr/sbin/chronyd -F 2
+root         870       1  0 10:33 ?        00:00:01 /usr/sbin/NetworkManager --no-daemon
+996          871       1  0 10:33 ?        00:00:01 /usr/lib/polkit-1/polkitd --no-debug
+root         902       1  0 10:33 ?        00:00:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+root         920       1  0 10:33 ?        00:00:00 /usr/sbin/crond -n
+root         922       1  0 10:33 ?        00:00:00 /sbin/agetty -o -p -- \u --noclear - linux
+root         924       1  0 10:33 ?        00:00:29 /usr/bin/containerd
+root         931       1  0 10:33 ?        00:00:01 /usr/sbin/rsyslogd -n
+root        1170       1  0 10:33 ?        00:00:36 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+root        1727       1  0 10:33 ?        00:00:01 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 622eb2db4296e8b9f7990d199970dfc7c7e19cb77d6b09852252ddc0730f7227 -address /run/containerd/containerd.sock
+root        1732       1  0 10:33 ?        00:00:01 /usr/bin/containerd-shim-runc-v2 -namespace moby -id f2fea415c9574be783a4df965a69c113628cfe7b9cc6e4c23a238c346c937e3a -address /run/containerd/containerd.sock
+root        1733       1  0 10:33 ?        00:00:01 /usr/bin/containerd-shim-runc-v2 -namespace moby -id f79b47ecee4ace32d8925e9c8206861bfdddb6db59246c4ecb3c410ac72aa9e6 -address /run/containerd/containerd.sock
+root        1735       1  0 10:33 ?        00:00:01 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 44f8dfdd3e37931e9ca63861445988e147e34f710993273023ec8f45609ca69c -address /run/containerd/containerd.sock
+root        1741       1  0 10:33 ?        00:00:01 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 3b37daea9e1002bf27862a2f388bc0da7e0e2a1176b354a2492a2c8e48a5544e -address /run/containerd/containerd.sock
+472         1846    1741  1 10:33 ?        00:02:19 grafana server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini --packaging=docker cfg:default.log.mode=console cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.paths.provisioning=/etc/grafana/provisioning
+nobody      1847    1733  0 10:33 ?        00:00:16 /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle
+root        1851    1735  0 10:33 ?        00:00:18 python -m exporter.app
+root        1860    1732  0 10:33 ?        00:00:00 python rules/watcher.py
+nobody      1873    1727  0 10:33 ?        00:00:28 /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+root        1946    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 3000 -container-ip 172.19.0.2 -container-port 3000 -use-listen-fd
+root        1962    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip :: -host-port 3000 -container-ip 172.19.0.2 -container-port 3000 -use-listen-fd
+root        2005    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 9090 -container-ip 172.19.0.4 -container-port 9090 -use-listen-fd
+root        2011    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip :: -host-port 9090 -container-ip 172.19.0.4 -container-port 9090 -use-listen-fd
+root        2033    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 9093 -container-ip 172.19.0.5 -container-port 9093 -use-listen-fd
+root        2040    1170  0 10:33 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip :: -host-port 9093 -container-ip 172.19.0.5 -container-port 9093 -use-listen-fd
+root        2127     902  0 10:33 ?        00:00:00 sshd: root [priv]
+root        2132     902  0 10:33 ?        00:00:00 sshd: root [priv]
+root        2134       1  0 10:33 ?        00:00:00 /usr/lib/systemd/systemd --user
+root        2136    2134  0 10:33 ?        00:00:00 (sd-pam)
+root        2147    2127  0 10:33 ?        00:00:46 sshd: root@pts/0
+root        2148    2132  0 10:33 ?        00:00:00 sshd: root@notty
+root        2149    2147  0 10:33 ?        00:00:02 -bash
+root        2157    2148  0 10:33 ?        00:00:00 /usr/libexec/openssh/sftp-server
+root       10919       2  0 10:58 ?        00:00:00 [kworker/u513:2-flush-253:0]
+root       18081       2  0 11:18 ?        00:00:01 [kworker/7:1-events]
+root       20117       2  0 11:23 ?        00:00:00 [kworker/R-tls-s]
+root       20444       2  0 11:24 ?        00:00:00 [kworker/7:2]
+root       22349       2  0 11:30 ?        00:00:00 [kworker/4:3-events]
+root       28622       2  0 11:48 ?        00:00:00 [kworker/u514:3-events_unbound]
+root       33986       2  0 12:03 ?        00:00:00 [kworker/1:0-cgroup_destroy]
+root       35393       2  0 12:07 ?        00:00:00 [kworker/0:1-mm_percpu_wq]
+root       41811       2  0 12:24 ?        00:00:00 [kworker/6:0]
+root       42111     902  0 12:25 ?        00:00:00 sshd: root [priv]
+root       42116     902  0 12:25 ?        00:00:00 sshd: root [priv]
+root       42117   42111  0 12:25 ?        00:00:02 sshd: root@pts/1
+root       42119   42117  0 12:25 ?        00:00:00 -bash
+root       42129   42116  0 12:25 ?        00:00:00 sshd: root@notty
+root       42130   42129  0 12:25 ?        00:00:00 /usr/libexec/openssh/sftp-server
+root       50016       2  0 12:26 ?        00:00:00 [kworker/u514:0-events_unbound]
+root       52373       2  0 12:32 ?        00:00:00 [kworker/3:1-mm_percpu_wq]
+root       52404       2  0 12:33 ?        00:00:00 [kworker/u514:1-events_unbound]
+root       58589       2  0 12:50 ?        00:00:08 [kworker/5:0-xfs-sync/dm-0]
+root       62096       2  0 13:00 ?        00:00:00 [kworker/0:2-cgroup_destroy]
+root       65697       2  0 13:10 ?        00:00:00 [kworker/u513:3-flush-253:0]
+root       69410       2  0 13:20 ?        00:00:00 [kworker/2:1-ata_sff]
+root       74133       2  0 13:34 ?        00:00:02 [kworker/5:1-mm_percpu_wq]
+root       75214       2  0 13:37 ?        00:00:00 [kworker/2:0-ata_sff]
+root       76297       2  0 13:40 ?        00:00:00 [kworker/3:0-cgroup_destroy]
+root       77339       1  5 13:43 ?        00:00:16 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 7ec5d67814560a107852842c260218d690f0e4ebcb3a530ac77a9ad2bfafd709 -address /run/containerd/containerd.sock
+root       77367   77339  0 13:43 ?        00:00:00 nginx: master process nginx -g daemon off;
+root       77375       2  0 13:43 ?        00:00:00 [kworker/4:0-events]
+root       77405    1170 72 13:43 ?        00:03:39 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8080 -container-ip 172.17.0.2 -container-port 80 -use-listen-fd
+root       77412    1170  0 13:43 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip :: -host-port 8080 -container-ip 172.17.0.2 -container-port 80 -use-listen-fd
+101        77449   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77450   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77451   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77452   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77453   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77454   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77455   77367  2 13:43 ?        00:00:07 nginx: worker process
+101        77456   77367  2 13:43 ?        00:00:07 nginx: worker process
+root       77567    2149 75 13:43 ?        00:03:36 python3 short_conn_client.py
+root       77621    2147  0 13:43 ?        00:00:01 bash -c while true; do sleep 1;head -v -n 8 /proc/meminfo; head -v -n 2 /proc/stat /proc/version /proc/uptime /proc/loadavg /proc/sys/fs/file-nr /proc/sys/kernel/hostname; tail -v -n 32 /proc/net/dev;echo '==> /proc/df <==';df -l;echo '==> /proc/who <==';who;echo '==> /proc/end <==';echo '##Moba##'; done
+root       77819   42119  0 13:43 ?        00:00:00 docker logs -f sentinel_exporter
+root       79342       1  2 13:48 ?        00:00:00 /usr/libexec/nm-dispatcher
+root       79371   77621  0 13:48 ?        00:00:00 sleep 1
+root       79373    1851  2 13:48 ?        00:00:00 bash /app/exporter/../snapshot/snapshot.sh
+root       79378   79373 99 13:48 ?        00:00:00 ps -ef
+
+========== 4. ss (网络与端口) ==========
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                          
+LISTEN 0      128          0.0.0.0:22        0.0.0.0:*                                    
+LISTEN 0      128          0.0.0.0:8000      0.0.0.0:*    users:(("python",pid=1851,fd=3))
+LISTEN 0      4096         0.0.0.0:3000      0.0.0.0:*                                    
+LISTEN 2      4096         0.0.0.0:8080      0.0.0.0:*                                    
+LISTEN 0      4096         0.0.0.0:9093      0.0.0.0:*                                    
+LISTEN 0      4096         0.0.0.0:9090      0.0.0.0:*                                    
+LISTEN 0      128             [::]:22           [::]:*                                    
+LISTEN 0      4096            [::]:3000         [::]:*                                    
+LISTEN 0      4096            [::]:8080         [::]:*                                    
+LISTEN 0      4096            [::]:9093         [::]:*                                    
+LISTEN 0      4096            [::]:9090         [::]:*                                    
+
+========== 5. dmesg (内核与系统日志) ==========
+Apr 13 21:00:20 localhost systemd[1]: Starting system activity accounting tool...
+Apr 13 21:00:20 localhost systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 13 21:00:20 localhost systemd[1]: Finished system activity accounting tool.
+Apr 13 21:03:03 localhost NetworkManager[870]: <info>  [1776085383.9150] dhcp4 (ens160): state changed new lease, address=192.168.80.131
+Apr 13 21:03:03 localhost systemd[1]: Starting Network Manager Script Dispatcher Service...
+Apr 13 21:03:03 localhost systemd[1]: Started Network Manager Script Dispatcher Service.
+Apr 13 21:03:14 localhost systemd[1]: NetworkManager-dispatcher.service: Deactivated successfully.
+Apr 13 21:10:20 localhost systemd[1]: Starting system activity accounting tool...
+Apr 13 21:10:20 localhost systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 13 21:10:20 localhost systemd[1]: Finished system activity accounting tool.
+Apr 13 21:18:03 localhost NetworkManager[870]: <info>  [1776086283.9171] dhcp4 (ens160): state changed new lease, address=192.168.80.131
+Apr 13 21:18:03 localhost systemd[1]: Starting Network Manager Script Dispatcher Service...
+Apr 13 21:18:03 localhost systemd[1]: Started Network Manager Script Dispatcher Service.
+Apr 13 21:18:14 localhost systemd[1]: NetworkManager-dispatcher.service: Deactivated successfully.
+Apr 13 21:20:20 localhost systemd[1]: Starting system activity accounting tool...
+Apr 13 21:20:20 localhost systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 13 21:20:20 localhost systemd[1]: Finished system activity accounting tool.
+Apr 13 21:30:20 localhost systemd[1]: Starting system activity accounting tool...
+Apr 13 21:30:20 localhost systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 13 21:30:20 localhost systemd[1]: Finished system activity accounting tool.
+Apr 13 21:33:03 localhost NetworkManager[870]: <info>  [1776087183.9179] dhcp4 (ens160): state changed new lease, address=192.168.80.131
+Apr 13 21:33:03 localhost systemd[1]: Starting Network Manager Script Dispatcher Service...
+Apr 13 21:33:03 localhost systemd[1]: Started Network Manager Script Dispatcher Service.
+Apr 13 21:33:14 localhost systemd[1]: NetworkManager-dispatcher.service: Deactivated successfully.
+Apr 13 21:40:20 localhost systemd[1]: Starting system activity accounting tool...
+Apr 13 21:40:20 localhost systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 13 21:40:20 localhost systemd[1]: Finished system activity accounting tool.
+Apr 13 21:42:21 localhost dockerd[1170]: time="2026-04-13T21:42:21.025669555+08:00" level=warning msg="Host doesn't match" cfgHost=registry-1.docker.io host=docker.m.daocloud.io
+Apr 13 21:43:00 localhost dockerd[1170]: time="2026-04-13T21:43:00.817585120+08:00" level=info msg="image pulled" digest="sha256:582c496ccf79d8aa6f8203a79d32aaf7ffd8b13362c60a701a2f9ac64886c93d" remote="docker.io/library/nginx:alpine"
+Apr 13 21:43:01 localhost kernel: evm: overlay not supported
+Apr 13 21:43:01 localhost systemd[1]: tmp-containerd\x2dmount3822584923.mount: Deactivated successfully.
+Apr 13 21:43:01 localhost systemd[1]: var-lib-docker-rootfs-overlayfs-7ec5d67814560a107852842c260218d690f0e4ebcb3a530ac77a9ad2bfafd709.mount: Deactivated successfully.
+Apr 13 21:43:01 localhost containerd[924]: time="2026-04-13T21:43:01.828442874+08:00" level=info msg="connecting to shim 7ec5d67814560a107852842c260218d690f0e4ebcb3a530ac77a9ad2bfafd709" address="unix:///run/containerd/s/f618d09c9b0d683f39aa5e039585c29566977e960c59c7c6546225bb89ed4e13" namespace=moby protocol=ttrpc version=3
+Apr 13 21:43:02 localhost systemd[1]: Started libcontainer container 7ec5d67814560a107852842c260218d690f0e4ebcb3a530ac77a9ad2bfafd709.
+Apr 13 21:43:02 localhost kernel: docker0: port 1(veth7cd0efa) entered blocking state
+Apr 13 21:43:02 localhost kernel: docker0: port 1(veth7cd0efa) entered disabled state
+Apr 13 21:43:02 localhost kernel: veth7cd0efa: entered allmulticast mode
+Apr 13 21:43:02 localhost kernel: veth7cd0efa: entered promiscuous mode
+Apr 13 21:43:02 localhost NetworkManager[870]: <info>  [1776087782.7599] manager: (veth7cd0efa): new Veth device (/org/freedesktop/NetworkManager/Devices/10)
+Apr 13 21:43:03 localhost kernel: eth0: renamed from veth7771b33
+Apr 13 21:43:03 localhost kernel: docker0: port 1(veth7cd0efa) entered blocking state
+Apr 13 21:43:03 localhost kernel: docker0: port 1(veth7cd0efa) entered forwarding state
+Apr 13 21:43:03 localhost NetworkManager[870]: <info>  [1776087783.2947] device (veth7cd0efa): carrier: link connected
+Apr 13 21:43:03 localhost NetworkManager[870]: <info>  [1776087783.2961] device (docker0): carrier: link connected
+Apr 13 21:43:03 localhost dockerd[1170]: time="2026-04-13T21:43:03.306364530+08:00" level=info msg="sbJoin: gwep4 ''->'25740e72e971', gwep6 ''->''" eid=25740e72e971 ep=dummy_nginx net=bridge nid=2c063fb17118
+Apr 13 21:43:51 localhost kernel: perf: interrupt took too long (42053 > 41673), lowering kernel.perf_event_max_sample_rate to 4000
+Apr 13 21:47:11 localhost kernel: perf: interrupt took too long (54824 > 52566), lowering kernel.perf_event_max_sample_rate to 3000
+Apr 13 21:48:03 localhost NetworkManager[870]: <info>  [1776088083.9184] dhcp4 (ens160): state changed new lease, address=192.168.80.131
+Apr 13 21:48:03 localhost systemd[1]: Starting Network Manager Script Dispatcher Service...
+Apr 13 21:48:04 localhost systemd[1]: Started Network Manager Script Dispatcher Service.
+

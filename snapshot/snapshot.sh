@@ -32,6 +32,19 @@ echo "" >> "${FILE_NAME}"
 
 # 第 4 个：记录网络连接和端口状态
 echo "========== 4. ss (网络与端口) ==========" >> "${FILE_NAME}"
+
+# 1. 宏观统计：瞬间获取各类 TCP 状态的汇总数量（极其轻量，SRE排障首选）
+echo "[TCP State Summary]" >> "${FILE_NAME}"
+ss -s >> "${FILE_NAME}" 2>&1
+echo "" >> "${FILE_NAME}"
+
+# 2. 精准打击：统计 TIME_WAIT 的精确数量
+echo "[TIME_WAIT Count]" >> "${FILE_NAME}"
+echo "TIME_WAIT Sockets: $(ss -ant | grep TIME-WAIT | wc -l)" >> "${FILE_NAME}" 2>&1
+echo "" >> "${FILE_NAME}"
+
+# 3. 基础信息：保留原来的监听端口查看（用于确认服务是否存活）
+echo "[Listening Ports]" >> "${FILE_NAME}"
 ss -ntlp >> "${FILE_NAME}" 2>&1
 echo "" >> "${FILE_NAME}"
 

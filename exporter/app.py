@@ -67,28 +67,40 @@ def metrics():
     """提供给 Prometheus 拉取数据的接口"""
     return Response(generate_latest(REGISTRY), mimetype=CONTENT_TYPE_LATEST)
 
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     """Alertmanager 触发告警时会 POST 到这里"""
     alert_data = request.get_json()
 
-    print("🚨 收到 Alertmanager 告警！")
-    print(alert_data)  # 打印告警内容，方便调试
+    # 从 JSON 数据中提取告警状态 (firing 或 resolved)
+    status = alert_data.get('status', 'unknown')
 
-    # 执行 snapshot.sh
-    try:
-        snapshot_path = os.path.join(os.path.dirname(__file__), "..", "snapshot", "snapshot.sh")
-        result = subprocess.run(['bash', snapshot_path], capture_output=True, text=True, timeout=10)
+    print(f"🚨 收到 Alertmanager 告警推送，当前状态: [{status}]")
 
-        if result.returncode == 0:
-            print("✅ snapshot.sh 执行成功")
-            print(result.stdout)
-        else:
-            print(f"❌ snapshot.sh 执行失败: {result.stderr}")
-    except Exception as e:
-        print(f"执行 snapshot.sh 异常: {e}")
+    # ================= 核心修改点 =================
+    if status == 'firing':
+        print("🔥 发现现行犯 (firing)！立刻执行 snapshot.sh 抓拍案发现场...")
+        try:
+            snapshot_path = os.path.join(os.path.dirname(__file__), "..", "snapshot", "snapshot.sh")
+            result = subprocess.run(['bash', snapshot_path], capture_output=True, text=True, timeout=10)
 
-    return jsonify({"status": "success", "message": "snapshot executed"}), 200
+            if result.returncode == 0:
+                print("✅ 现场快照抓取成功！")
+                print(result.stdout)
+            else:
+                print(f"❌ 快照抓取失败: {result.stderr}")
+        except Exception as e:
+            print(f"执行 snapshot.sh 异常: {e}")
+
+    elif status == 'resolved':
+        print("🕊️ 告警已恢复 (resolved)。现行犯已死亡/逃跑，系统已自愈，跳过无意义的快照。")
+
+    else:
+        print(f"⚠️ 收到未知状态的告警，不做处理: {alert_data}")
+    # ==============================================
+
+    return jsonify({"status": "success", "message": f"webhook processed for status: {status}"}), 200
 
 if __name__ == '__main__':
     print("🚀 Sentinel Exporter + Webhook 已启动")
