@@ -179,6 +179,7 @@ To enable the CD stage, add two repository secrets:
 - `DOCKERHUB_TOKEN` — a Docker Hub access token (not your password)
 
 ### Version History
+- **`v1.0.0`** (2026.04) — First stable release: all 5 stages complete — CI/CD pipeline, final README polish, commit history, interview prep
 - **`v0.3.0`** (2026.04) — Stage 3 & 4 complete: architecture doc + K8s SRE guide + eBPF bpftrace POC (3 scripts) + eBPF learning notes
 - **`v0.2.0`** (2026.04) — Stage 2 complete: chaos tools + 3 postmortem reports + webhook auto-snapshot + dynamic rule hot-reload
 - **`v0.1.1`** (2026.04) — Stage 1 complete: collectors + exporter + Grafana + Docker + snapshot + rules
@@ -188,7 +189,7 @@ To enable the CD stage, add two repository secrets:
 - **Stage 2 (Done)**: OOM / Zombie / TIME_WAIT experiments + 3 postmortem reports + webhook + dynamic rules ✅
 - **Stage 3 (Done)**: `docs/architecture.md` + K8s SRE cognition doc ✅
 - **Stage 4 (Done)**: eBPF bpftrace POC — `tcp_state.bt`, `recv_trace.bt`, `stack_trace.bt` + learning notes ✅
-- **Stage 5**: Final polish — README, commit history, interview prep
+- **Stage 5 (Done)**: Final polish — README, CI/CD pipeline, commit history, interview prep ✅
 
 ---
 
@@ -353,6 +354,7 @@ LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 - `DOCKERHUB_TOKEN` — Docker Hub Access Token（非密码）
 
 ### 版本历史
+- **`v1.0.0`**（2026.04）—— 首个稳定版：全部五个阶段完成——CI/CD 流水线、README 最终打磨、commit 历史整理、面试准备
 - **`v0.3.0`**（2026.04）—— 第三、四阶段收口：架构文档 + K8s SRE 认知指南 + eBPF bpftrace POC（3 个脚本）+ eBPF 学习笔记
 - **`v0.2.0`**（2026.04）—— 第二阶段收口：混沌工具 + 三份 postmortem + Webhook 自动快照 + 动态规则热重载
 - **`v0.1.1`**（2026.04）—— 第一阶段收口：采集 + Exporter + Grafana + Docker + 快照 + 告警规则
@@ -362,4 +364,4 @@ LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 - **第二阶段（已完成）**：OOM / 僵尸进程 / TIME_WAIT 三个实验 + 三份带证据 postmortem + Webhook + 动态规则 ✅
 - **第三阶段（已完成）**：`docs/architecture.md` + K8s SRE 认知文档 ✅
 - **第四阶段（已完成）**：eBPF bpftrace POC —— `tcp_state.bt`、`recv_trace.bt`、`stack_trace.bt` + 学习笔记 ✅
-- **第五阶段**：最终打磨——README、commit 历史、面试准备
+- **第五阶段（已完成）**：最终打磨——README、CI/CD 流水线、commit 历史、面试准备 ✅
