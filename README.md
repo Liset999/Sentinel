@@ -126,11 +126,12 @@ sudo bpftrace eBPF/tcp_state.bt
 
 ### Project Layout
 ```
-collector/      /proc parsers (cpu, memory, load, tcp, process)
+collector/      Hand-written /proc parsers (cpu, memory, load, tcp, process) —
+                the production collectors used by the exporter
 exporter/       Prometheus Exporter + Alertmanager webhook (Flask app)
-ai/             Enhanced /proc parsers: full CPU-time breakdown (user/nice/system/
-                iowait/irq/softirq/steal), complete 11-state TCP mapping, full
-                meminfo dict, and robust error handling with type hints
+ai/             AI-generated reference parsers (used as a learning scaffold,
+                NOT used by the exporter); covers the same metrics as collector/
+                with full CPU-time breakdown, 11-state TCP mapping, and type hints
 eBPF/           bpftrace scripts: tcp_state.bt, recv_trace.bt, stack_trace.bt
 chaos/          Fault injection tools (OOM / zombie / TIME_WAIT)
 docs/           architecture.md, k8s_for_sre.md, ebpf_notes.md,
@@ -162,6 +163,20 @@ Each metric can be cross-checked with standard system commands:
 - Load: compare with `uptime`
 - TCP states: compare with `ss -ant | awk '{print $1}' | sort | uniq -c`
 - Zombies: compare with `ps aux | grep Z`
+
+### CI/CD Pipeline
+The repository ships a two-stage GitHub Actions workflow (`.github/workflows/ci-cd.yml`).
+
+| Stage | Trigger | What it does |
+|---|---|---|
+| **CI — Unit Tests** | every push & PR to `main`/`master` | Checks out the repo, sets up Python 3.9 with pip cache, installs dependencies, runs `pytest tests/` |
+| **CD — Build & Push** | push to `main`/`master` or version tag (`v*.*.*`) — **only if CI passes** | Logs in to Docker Hub, generates image tags from Git metadata, builds and pushes the `sentinel` image with registry-level layer caching |
+
+Pull requests only trigger the CI stage (tests only); the Docker image is never pushed until the code lands on the main branch.
+
+To enable the CD stage, add two repository secrets:
+- `DOCKERHUB_USERNAME` — your Docker Hub username
+- `DOCKERHUB_TOKEN` — a Docker Hub access token (not your password)
 
 ### Version History
 - **`v0.3.0`** (2026.04) — Stage 3 & 4 complete: architecture doc + K8s SRE guide + eBPF bpftrace POC (3 scripts) + eBPF learning notes
@@ -285,11 +300,12 @@ sudo bpftrace eBPF/tcp_state.bt
 
 ### 项目结构
 ```
-collector/      /proc 解析器（cpu、memory、load、tcp、process）
+collector/      手写的 /proc 解析器（cpu、memory、load、tcp、process）——
+                exporter 实际使用的生产级采集模块
 exporter/       Prometheus Exporter + Alertmanager Webhook（Flask 应用）
-ai/             增强版 /proc 解析器：完整 CPU 时间分解（user/nice/system/
-                iowait/irq/softirq/steal）、11 种 TCP 状态完整映射、完整
-                meminfo 字典、带类型注解的防御性错误处理
+ai/             AI 生成的参考版解析器（作为学习脚手架，exporter 不使用）；
+                覆盖与 collector/ 相同的指标，带完整 CPU 时间分解、
+                11 种 TCP 状态映射与类型注解
 eBPF/           bpftrace 脚本：tcp_state.bt、recv_trace.bt、stack_trace.bt
 chaos/          混沌工程工具（OOM / 僵尸进程 / TIME_WAIT）
 docs/           architecture.md、k8s_for_sre.md、ebpf_notes.md、
@@ -321,6 +337,20 @@ LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 - 负载：对比 `uptime`
 - TCP 状态：对比 `ss -ant | awk '{print $1}' | sort | uniq -c`
 - 僵尸进程：对比 `ps aux | grep Z`
+
+### CI/CD 流水线
+项目内置两阶段 GitHub Actions 工作流（`.github/workflows/ci-cd.yml`）。
+
+| 阶段 | 触发条件 | 执行内容 |
+|---|---|---|
+| **CI — 单元测试** | 向 `main`/`master` 的每次 Push 及 PR | 检出代码 → 配置 Python 3.9（含 pip 缓存）→ 安装依赖 → 运行 `pytest tests/` |
+| **CD — 构建并推送镜像** | Push 到 `main`/`master` 或打版本 Tag（`v*.*.*`）——**必须 CI 通过后才执行** | 登录 Docker Hub → 从 Git 元数据自动生成镜像 Tag → 构建并推送 `sentinel` 镜像（含 Registry 层缓存） |
+
+提 PR 时只触发 CI 阶段（只跑测试），代码合入主分支后才触发镜像推送。
+
+启用 CD 阶段需在仓库 Settings → Secrets 中配置：
+- `DOCKERHUB_USERNAME` — Docker Hub 用户名
+- `DOCKERHUB_TOKEN` — Docker Hub Access Token（非密码）
 
 ### 版本历史
 - **`v0.3.0`**（2026.04）—— 第三、四阶段收口：架构文档 + K8s SRE 认知指南 + eBPF bpftrace POC（3 个脚本）+ eBPF 学习笔记
