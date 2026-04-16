@@ -3,7 +3,7 @@
 **轻量级 Linux 可观测性与故障诊断训练项目**  
 Lightweight Linux observability and fault-diagnosis training project.
 
-> 当前里程碑 / Current milestone: **`v0.2.0`**（第一、二阶段均已完成）
+> 当前里程碑 / Current milestone: **`v0.3.0`**（第一、二、三、四阶段均已完成）
 
 [English](#english) | [中文](#zh-cn)
 
@@ -14,7 +14,7 @@ Lightweight Linux observability and fault-diagnosis training project.
 ## English
 
 ### What is Sentinel?
-Sentinel is a **learning-oriented SRE project** built for ByteDance SRE internship preparation. It collects Linux system metrics by directly parsing `/proc` filesystem files, without using libraries like `psutil`.
+Sentinel is a **learning-oriented SRE project** built for ByteDance SRE internship preparation. It collects Linux system metrics by directly parsing `/proc` filesystem files — without relying on libraries like `psutil` — and extends to eBPF-based dynamic kernel tracing.
 
 **Core focus**:
 - Manual `/proc` parsing and metric collection
@@ -23,8 +23,10 @@ Sentinel is a **learning-oriented SRE project** built for ByteDance SRE internsh
 - Dynamic alert threshold hot-reload via `.env`
 - Fault snapshots triggered automatically on alert
 - Reproducible fault experiments (OOM / Zombie / TIME_WAIT) with postmortem reports
+- eBPF / bpftrace kernel probes for sub-millisecond TCP state and network tracing
+- Kubernetes architecture cognition document (SRE perspective)
 
-### Current Status (v0.2.0)
+### Current Status (v0.3.0)
 
 #### Stage 1 — Done ✅
 Main pipeline rebuilt from scratch.
@@ -55,7 +57,7 @@ Fault experiments and postmortem reports completed.
 | Tool | Purpose |
 |---|---|
 | `memory_eater.c` | Rapidly allocates memory to trigger OOM Killer |
-| `memory_eat_slow.c` | Slowly leaks memory to allow monitoring to catch the event |
+| `memory_eat_slow.c` | Slowly leaks memory to give monitoring time to capture the event |
 | `zombie_maker.c` | Creates zombie processes |
 | `short_conn_client.py` | Generates high-frequency short TCP connections to build up TIME_WAIT |
 
@@ -63,6 +65,26 @@ Fault experiments and postmortem reports completed.
 - `postmortem-oom.md` — OOM Killer fault, Docker network namespace isolation, Pull-model race condition
 - `postmortem-zombie.md` — Zombie process accumulation analysis
 - `postmortem-timewait.md` — TIME_WAIT surge under short-lived connection load
+
+#### Stage 3 — Done ✅
+Architecture documentation and Kubernetes cognition document completed.
+
+- `docs/architecture.md` — Full bilingual (EN/ZH) architecture overview with Mermaid diagrams, component responsibility table, data-flow walkthroughs, and Docker service topology
+- `docs/k8s_for_sre.md` — K8s fundamentals from an SRE perspective: Pod / Deployment / Service / DaemonSet, Prometheus service discovery, breaking container isolation for host-level monitoring, and a Sentinel-to-K8s migration topology
+
+#### Stage 4 — Done ✅
+eBPF POC implemented with three bpftrace scripts.
+
+**eBPF scripts** (`eBPF/`):
+| Script | What it traces |
+|---|---|
+| `tcp_state.bt` | Hooks `tcp_set_state` in the kernel; prints every TCP state transition on port 8888, catching sub-millisecond connections that `/proc/net/tcp` polling always misses |
+| `recv_trace.bt` | Hooks `tcp_queue_rcv` (kernel lower-half, packet enqueue) and `tcp_recvmsg` (upper-half, application dequeue) for a specific IP; reveals the two-phase receive pipeline with per-event kernel stack traces |
+| `stack_trace.bt` | Hooks `__dev_queue_xmit` and captures the full kernel call stack for packets destined to a specific IP (e.g. 8.8.8.8); useful for understanding the transmit path |
+
+**eBPF learning notes** (`docs/`):
+- `ebpf_notes.md` — eBPF / BCC concepts: verifier, JIT compilation, BPF Maps, kprobes / uprobes, and why eBPF outperforms traditional polling-based observability
+- `eBPF与nc对比文档.md` — Hands-on experiment: head-to-head comparison between `/proc/net/tcp` polling and eBPF event-driven tracing for capturing short-lived TCP connections; includes byte-order pitfalls for kernel struct fields
 
 ### Quick Start
 ```bash
@@ -85,6 +107,12 @@ curl http://localhost:8000/metrics
 
 # 6. Run unit tests
 make test
+
+# 7. (Optional) Standalone CLI — no Docker required
+python main.py
+
+# 8. (Optional) Run an eBPF trace — requires bpftrace on the host
+sudo bpftrace eBPF/tcp_state.bt
 ```
 
 ### Docker Compose Services
@@ -100,9 +128,14 @@ make test
 ```
 collector/      /proc parsers (cpu, memory, load, tcp, process)
 exporter/       Prometheus Exporter + Alertmanager webhook (Flask app)
-ai/             Alternative /proc parsers with detailed CPU-time breakdown
+ai/             Enhanced /proc parsers: full CPU-time breakdown (user/nice/system/
+                iowait/irq/softirq/steal), complete 11-state TCP mapping, full
+                meminfo dict, and robust error handling with type hints
+eBPF/           bpftrace scripts: tcp_state.bt, recv_trace.bt, stack_trace.bt
 chaos/          Fault injection tools (OOM / zombie / TIME_WAIT)
-docs/           Postmortem reports (OOM, zombie, TIME_WAIT)
+docs/           architecture.md, k8s_for_sre.md, ebpf_notes.md,
+                eBPF与nc对比文档.md, postmortem-oom.md, postmortem-zombie.md,
+                postmortem-timewait.md
 rules/          Alert rules (default_rules.yaml), rule_parser.py, watcher.py
 grafana/        Grafana dashboard JSON and provisioning config
 snapshot/       snapshot.sh — fault scene capture script
@@ -120,9 +153,9 @@ ZOMBIE_THRESHOLD=0        # sentinel_process_count{state="zombie"} > N
 TIME_WAIT_THRESHOLD=80    # sentinel_tcp_connections{state="time_wait"} > N
 LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 ```
-`rules/watcher.py` polls `.env` and `rules/default_rules.yaml` every 5s and triggers a Prometheus hot-reload (`/-/reload`) when either file changes.
+`rules/watcher.py` polls `.env` and `rules/default_rules.yaml` every 5s and triggers a Prometheus hot-reload (`/-/reload`) when either file changes. No container restart is needed.
 
-### Validation
+### Metric Validation
 Each metric can be cross-checked with standard system commands:
 - CPU: compare with `top` / `mpstat`
 - Memory: compare with `free -h`
@@ -131,14 +164,15 @@ Each metric can be cross-checked with standard system commands:
 - Zombies: compare with `ps aux | grep Z`
 
 ### Version History
+- **`v0.3.0`** (2026.04) — Stage 3 & 4 complete: architecture doc + K8s SRE guide + eBPF bpftrace POC (3 scripts) + eBPF learning notes
 - **`v0.2.0`** (2026.04) — Stage 2 complete: chaos tools + 3 postmortem reports + webhook auto-snapshot + dynamic rule hot-reload
 - **`v0.1.1`** (2026.04) — Stage 1 complete: collectors + exporter + Grafana + Docker + snapshot + rules
 
 ### Roadmap
 - **Stage 1 (Done)**: `/proc` collectors + Exporter + Grafana + Docker + snapshot + rules ✅
 - **Stage 2 (Done)**: OOM / Zombie / TIME_WAIT experiments + 3 postmortem reports + webhook + dynamic rules ✅
-- **Stage 3**: `docs/architecture.md` + minimal K8s cognition doc
-- **Stage 4**: Optional eBPF small POC (only if Stage 1–3 are stable)
+- **Stage 3 (Done)**: `docs/architecture.md` + K8s SRE cognition doc ✅
+- **Stage 4 (Done)**: eBPF bpftrace POC — `tcp_state.bt`, `recv_trace.bt`, `stack_trace.bt` + learning notes ✅
 - **Stage 5**: Final polish — README, commit history, interview prep
 
 ---
@@ -147,11 +181,11 @@ Each metric can be cross-checked with standard system commands:
 ## 中文
 
 ### Sentinel 是什么？
-Sentinel 是一个**面向字节 SRE 日常实习**的学习型项目。核心做法是**直接解析 `/proc` 文件系统**，而不依赖 `psutil` 等第三方库，从底层掌握 Linux 可观测性。
+Sentinel 是一个**面向字节 SRE 日常实习**的学习型项目。核心做法是**直接解析 `/proc` 文件系统**，而不依赖 `psutil` 等第三方库，从底层掌握 Linux 可观测性；并在此基础上扩展至 **eBPF 内核动态追踪**。
 
-项目只做主链路：采集 → Exporter → Grafana → 告警 → 快照 → 复盘。不做 K8s 平台化，不做 AIOps。
+项目主链路：采集 → Exporter → Grafana → 告警 → 快照 → 复盘。同时覆盖 eBPF 探针实验与 K8s SRE 认知文档。
 
-### 当前状态（v0.2.0）
+### 当前状态（v0.3.0）
 
 #### 第一阶段 — 已完成 ✅
 主链路从零重写。
@@ -191,6 +225,26 @@ Sentinel 是一个**面向字节 SRE 日常实习**的学习型项目。核心�
 - `postmortem-zombie.md` — 僵尸进程积累分析
 - `postmortem-timewait.md` — 短连接压测下的 TIME_WAIT 激增
 
+#### 第三阶段 — 已完成 ✅
+架构文档与 Kubernetes 认知文档全部完成。
+
+- `docs/architecture.md` — 完整双语（中英文）架构总览：Mermaid 流程图、模块职责表、核心数据流解析、Docker 服务拓扑
+- `docs/k8s_for_sre.md` — SRE 视角的 K8s 认知文档：Pod / Deployment / Service / DaemonSet 四大件、Prometheus 服务发现机制、打破容器隔离实现宿主机级监控、Sentinel 迁移 K8s 的部署拓扑设计
+
+#### 第四阶段 — 已完成 ✅
+eBPF POC 落地，三个 bpftrace 脚本均已实现。
+
+**eBPF 脚本**（`eBPF/`）：
+| 脚本 | 追踪内容 |
+|---|---|
+| `tcp_state.bt` | Hook 内核 `tcp_set_state`，打印 8888 端口每一次 TCP 状态跳变，能抓到 `/proc/net/tcp` 轮询必然漏掉的毫秒级短连接 |
+| `recv_trace.bt` | 同时 Hook `tcp_queue_rcv`（内核下半部，入队）和 `tcp_recvmsg`（上半部，应用取件），针对特定 IP 打印内核调用栈，直观呈现两阶段接收流水线 |
+| `stack_trace.bt` | Hook `__dev_queue_xmit`，抓取发往指定 IP（如 8.8.8.8）数据包的完整内核调用栈，用于理解发送路径 |
+
+**eBPF 学习笔记**（`docs/`）：
+- `ebpf_notes.md` — eBPF / BCC 核心概念：验证器（Verifier）、JIT 编译、BPF Maps、kprobes / uprobes，以及 eBPF 相比传统轮询方式在可观测性上的压倒性优势
+- `eBPF与nc对比文档.md` — 动手实验复盘：`/proc/net/tcp` 轮询 vs eBPF 事件驱动在捕捉短连接上的对比；同时包含内核结构体字段字节序（主机序 vs 网络序）的避坑指南
+
 ### 快速开始
 ```bash
 # 1. 克隆项目
@@ -212,6 +266,12 @@ curl http://localhost:8000/metrics
 
 # 6. 运行单元测试
 make test
+
+# 7.（可选）独立 CLI，无需 Docker
+python main.py
+
+# 8.（可选）运行 eBPF 追踪——需要宿主机安装 bpftrace
+sudo bpftrace eBPF/tcp_state.bt
 ```
 
 ### Docker Compose 服务一览
@@ -227,9 +287,14 @@ make test
 ```
 collector/      /proc 解析器（cpu、memory、load、tcp、process）
 exporter/       Prometheus Exporter + Alertmanager Webhook（Flask 应用）
-ai/             带详细 CPU 时间分解的替代版 /proc 解析器
+ai/             增强版 /proc 解析器：完整 CPU 时间分解（user/nice/system/
+                iowait/irq/softirq/steal）、11 种 TCP 状态完整映射、完整
+                meminfo 字典、带类型注解的防御性错误处理
+eBPF/           bpftrace 脚本：tcp_state.bt、recv_trace.bt、stack_trace.bt
 chaos/          混沌工程工具（OOM / 僵尸进程 / TIME_WAIT）
-docs/           Postmortem 报告（OOM、僵尸进程、TIME_WAIT）
+docs/           architecture.md、k8s_for_sre.md、ebpf_notes.md、
+                eBPF与nc对比文档.md、postmortem-oom.md、postmortem-zombie.md、
+                postmortem-timewait.md
 rules/          告警规则（default_rules.yaml）、rule_parser.py、watcher.py
 grafana/        Grafana 大盘 JSON 及 provisioning 配置
 snapshot/       snapshot.sh —— 故障现场快照脚本
@@ -247,7 +312,7 @@ ZOMBIE_THRESHOLD=0        # sentinel_process_count{state="zombie"} > N
 TIME_WAIT_THRESHOLD=80    # sentinel_tcp_connections{state="time_wait"} > N
 LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 ```
-`rules/watcher.py` 每 5 秒轮询 `.env` 和 `rules/default_rules.yaml`，检测到变更后自动调用 Prometheus `/-/reload` 接口完成热重载。
+`rules/watcher.py` 每 5 秒轮询 `.env` 和 `rules/default_rules.yaml`，检测到变更后自动调用 Prometheus `/-/reload` 接口完成热重载，无需重启任何容器。
 
 ### 指标验证方式
 每个指标均可用系统命令交叉验证：
@@ -258,12 +323,13 @@ LOAD_THRESHOLD=3.5        # sentinel_loadavg{interval="load5"} > N
 - 僵尸进程：对比 `ps aux | grep Z`
 
 ### 版本历史
+- **`v0.3.0`**（2026.04）—— 第三、四阶段收口：架构文档 + K8s SRE 认知指南 + eBPF bpftrace POC（3 个脚本）+ eBPF 学习笔记
 - **`v0.2.0`**（2026.04）—— 第二阶段收口：混沌工具 + 三份 postmortem + Webhook 自动快照 + 动态规则热重载
 - **`v0.1.1`**（2026.04）—— 第一阶段收口：采集 + Exporter + Grafana + Docker + 快照 + 告警规则
 
 ### 路线图
 - **第一阶段（已完成）**：`/proc` 采集 + Exporter + Grafana + Docker + 快照脚本 + 告警规则 ✅
 - **第二阶段（已完成）**：OOM / 僵尸进程 / TIME_WAIT 三个实验 + 三份带证据 postmortem + Webhook + 动态规则 ✅
-- **第三阶段**：`docs/architecture.md` + 最小 K8s 认知文档
-- **第四阶段**：可选 eBPF 小 POC（仅在前三阶段稳定后考虑）
+- **第三阶段（已完成）**：`docs/architecture.md` + K8s SRE 认知文档 ✅
+- **第四阶段（已完成）**：eBPF bpftrace POC —— `tcp_state.bt`、`recv_trace.bt`、`stack_trace.bt` + 学习笔记 ✅
 - **第五阶段**：最终打磨——README、commit 历史、面试准备
