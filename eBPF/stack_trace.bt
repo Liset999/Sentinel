@@ -1,0 +1,16 @@
+#!/usr/bin/bpftrace
+#include <linux/skbuff.h>
+#include <linux/ip.h>
+
+kprobe:__dev_queue_xmit {
+    $skb = (struct sk_buff *)arg0;
+
+    // 获取 网络层 头部
+    $ip_header = (struct iphdr *)($skb->head + $skb->network_header);
+
+    // 过滤特定地址的数据包
+    if ($ip_header->daddr == (uint32)pton("8.8.8.8")) {
+        printf("__dev_queue_xmit has been called\n");
+        @[kstack] = count();
+    }
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/bpftrace
+#include <net/sock.h>
+
+BEGIN {
+    printf("eBPF 监控已启动，正在死盯 8888 端口的状态变化...\n");
+}
+
+kprobe:tcp_set_state {
+    $sk = (struct sock *)arg0;
+    $new_state = arg1;
+    
+    // 过滤出源端口或目的端口是 8888 的流量
+	if ($sk->__sk_common.skc_num == 8888 || $sk->__sk_common.skc_dport == 47138) {
+        printf("eBPF 抓拍 -> 状态改变为: %d (1是ESTABLISHED, 7是CLOSE)\n", $new_state);
+    }
+}

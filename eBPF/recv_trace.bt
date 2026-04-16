@@ -1,0 +1,29 @@
+#!/usr/bin/bpftrace
+#include <linux/skbuff.h>
+#include <linux/ip.h>
+#include <net/sock.h>
+
+// ====== 第一部分：下半部（完全使用你的模板） ======
+kprobe:tcp_queue_rcv {
+    // 获取 skb 结构中的源IP地址
+    $skb = (struct sk_buff *)arg1;
+    $iph = (struct iphdr *)($skb->head + $skb->network_header);
+
+    // 过滤特定源地址的包 (假设对方IP是 192.168.1.180)
+    if ($iph->saddr == (uint32)pton("127.0.0.1")) {
+        printf("\n---> 【下半部：内核塞入快递柜】tcp_queue_rcv 触发！\n");
+        @[kstack] = count();
+    }
+}
+
+// ====== 第二部分：上半部（应用取件） ======
+kprobe:tcp_recvmsg {
+    // tcp_recvmsg 的参数没有 skb，我们要从 Socket (sock) 结构体里拿 IP
+    $sock = (struct sock *)arg0;
+    
+    // skc_daddr 代表远端（对方）的 IP
+    if ($sock->__sk_common.skc_daddr == (uint32)pton("127.0.0.1")) {
+        printf("\n<--- 【上半部：应用下楼取件】tcp_recvmsg 触发！\n");
+        @[kstack] = count();
+    }
+}
