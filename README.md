@@ -4,6 +4,13 @@
 Lightweight Linux observability and fault-diagnosis training project.
 
 > 当前里程碑 / Current milestone: **`v0.3.0`**（第一、二、三、四阶段均已完成）
+<img width="2217" height="1198" alt="image" src="https://github.com/user-attachments/assets/57edf77b-e1de-442c-b0c3-c1f19b81cb55" />
+<img width="2240" height="1197" alt="image" src="https://github.com/user-attachments/assets/43c979af-005c-44ae-8018-6942b929bf83" />
+<img width="1553" height="907" alt="image" src="https://github.com/user-attachments/assets/230f6213-4639-4312-884c-0b48ac701876" />
+
+<img width="2240" height="1079" alt="image" src="https://github.com/user-attachments/assets/58887204-16f7-4e9c-a173-842d4edb9c62" />
+
+
 
 [English](#english) | [中文](#zh-cn)
 
