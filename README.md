@@ -21,7 +21,7 @@ Lightweight Linux observability and fault-diagnosis training project.
 ## English
 
 ### What is Sentinel?
-Sentinel is a **learning-oriented SRE project** built for ByteDance SRE internship preparation. It collects Linux system metrics by directly parsing `/proc` filesystem files — without relying on libraries like `psutil` — and extends to eBPF-based dynamic kernel tracing.
+Sentinel is a **learning-oriented SRE project** built for SRE internship preparation. It collects Linux system metrics by directly parsing `/proc` filesystem files — without relying on libraries like `psutil` — and extends to eBPF-based dynamic kernel tracing.
 
 **Core focus**:
 - Manual `/proc` parsing and metric collection
@@ -204,7 +204,7 @@ To enable the CD stage, add two repository secrets:
 ## 中文
 
 ### Sentinel 是什么？
-Sentinel 是一个**面向字节 SRE 日常实习**的学习型项目。核心做法是**直接解析 `/proc` 文件系统**，而不依赖 `psutil` 等第三方库，从底层掌握 Linux 可观测性；并在此基础上扩展至 **eBPF 内核动态追踪**。
+Sentinel 是一个**面向 SRE 日常实习**的学习型项目。核心做法是**直接解析 `/proc` 文件系统**，而不依赖 `psutil` 等第三方库，从底层掌握 Linux 可观测性；并在此基础上扩展至 **eBPF 内核动态追踪**。
 
 项目主链路：采集 → Exporter → Grafana → 告警 → 快照 → 复盘。同时覆盖 eBPF 探针实验与 K8s SRE 认知文档。
 
